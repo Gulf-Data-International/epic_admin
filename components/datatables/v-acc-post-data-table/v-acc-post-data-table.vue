@@ -17,12 +17,15 @@ import vBaseDatatable from '~/components/datatables/v-base-datatable/data-table.
 
 export default {
   components: { vBaseDatatable },
+  props: {
+    items: { type: Array, default: () => [] },
+  },
   data() {
     return {
       headers: [
         {
-          text: 'Name',
-          value: 'name',
+          text: 'Account',
+          value: 'account',
           align: 'start',
           sortable: false,
           groupable: false,
@@ -34,14 +37,11 @@ export default {
               'single-line': true,
               'hide-details': true,
             },
-            on: {
-              blur: this.itemComponentBlur,
-            },
           },
         },
         {
-          text: 'Value',
-          value: 'val',
+          text: 'Credit',
+          value: 'credit',
           groupable: false,
           type: Number,
           filters: [],
@@ -55,81 +55,36 @@ export default {
           },
         },
         {
-          text: 'Active',
-          value: 'active',
+          text: 'Debit',
+          value: 'debit',
           groupable: false,
-          type: Boolean,
+          type: Number,
           filters: [],
           component: {
-            vType: 'v-checkbox',
+            vType: 'v-text-field',
             attrs: {
               'single-line': true,
               'hide-details': true,
-              type: 'boolean',
+              type: 'number',
             },
             on: {
-              'keyup.space': '$event.target.blur()',
+              blur: this.itemComponentBlur,
             },
           },
         },
         {
-          text: 'Created',
-          value: 'created',
+          text: 'Description',
+          value: 'description',
           groupable: false,
-          type: Boolean,
+          type: String,
           filters: [],
           component: {
-            vType: 'v-data-table-date-picker',
+            vType: 'v-text-field',
             attrs: {
               'single-line': true,
               'hide-details': true,
-              type: 'boolean',
             },
           },
-        },
-      ],
-      items: [
-        {
-          id: 10,
-          name: 'test-true',
-          val: 15,
-          active: true,
-          created: '1975-08-01',
-        },
-        {
-          id: 11,
-          name: 'test-false',
-          val: 15,
-          active: false,
-          created: '1975-08-02',
-        },
-        {
-          id: 12,
-          name: 'test-true',
-          val: 18.5,
-          active: true,
-          created: '1975-08-03',
-        },
-        {
-          id: 13,
-          name: 'tent-false',
-          val: 45.7,
-          active: false,
-          created: '1975-08-04',
-        },
-        {
-          id: 14,
-          name: 'tent-false',
-          val: 15,
-          active: false,
-          created: '1975-08-05',
-        },
-        {
-          id: 15,
-          name: 'tent-true',
-          val: 57,
-          active: true,
-          created: '1975-08-06',
         },
       ],
     }

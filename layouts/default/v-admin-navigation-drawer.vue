@@ -62,7 +62,12 @@ export default {
         },
         {
           icon: 'mdi-table',
-          title: 'Data Table',
+          title: 'Journal Enrty',
+          to: this.localePath('/datatables/accJournalPost'),
+        },
+        {
+          icon: 'mdi-table',
+          title: 'DataTable',
           to: this.localePath('/datatables'),
         },
         {
