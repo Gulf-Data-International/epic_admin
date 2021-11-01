@@ -65,10 +65,11 @@ export default {
             attrs: {
               'single-line': true,
               'hide-details': true,
+              key: this.componentKey,
               type: 'boolean',
             },
             on: {
-              'keyup.space': '$event.target.blur()',
+              keyup: this.checkboxKeyup,
             },
           },
         },
@@ -76,14 +77,14 @@ export default {
           text: 'Created',
           value: 'created',
           groupable: false,
-          type: Boolean,
+          type: Date,
           filters: [],
           component: {
             vType: 'v-data-table-date-picker',
             attrs: {
               'single-line': true,
               'hide-details': true,
-              type: 'boolean',
+              type: 'date',
             },
           },
         },
@@ -132,6 +133,7 @@ export default {
           created: '1975-08-06',
         },
       ],
+      componentKey: 0,
     }
   },
   computed: {
@@ -141,8 +143,19 @@ export default {
     this.setLoading(false)
   },
   methods: {
-    itemComponentBlur: (props, event) => {
-      console.log('blurItemCell :', JSON.stringify(props))
+    itemComponentBlur(props, event) {
+      console.log('Item Props:', JSON.stringify(props))
+    },
+    checkboxKeyup(props, event) {
+      if (event.key === 'Enter') {
+        NaN()
+      } else if (!event.key.replace(/\s/g, '').length) {
+        document.getElementById(event.target.id).click()
+      } else {
+        console.log('Item Keyup:', String(event.key))
+      }
+      // console.log('keyCode:', event.keyCode)
+      // console.log('$el:', document.getElementById(event.target.id).blur)
     },
     ...mapActions(['setLoading']),
   },
