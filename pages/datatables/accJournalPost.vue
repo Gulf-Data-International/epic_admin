@@ -17,7 +17,7 @@ export default {
         {
           id: 10,
           account: '101225',
-          credit: 15000,
+          credit: 15000.237,
           debit: 0,
           description: 'Assets - Current Assets',
         },
@@ -25,7 +25,7 @@ export default {
           id: 20,
           account: '101227',
           credit: 0,
-          debit: 15000,
+          debit: 15000.237,
           description: 'Assets - Current Assets',
         },
       ],

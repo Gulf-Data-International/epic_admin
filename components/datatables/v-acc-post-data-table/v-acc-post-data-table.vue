@@ -26,6 +26,7 @@ export default {
         {
           text: 'Account',
           value: 'account',
+          width: '10%',
           align: 'start',
           sortable: false,
           groupable: false,
@@ -42,6 +43,7 @@ export default {
         {
           text: 'Credit',
           value: 'credit',
+          width: '15%',
           groupable: false,
           type: Number,
           filters: [],
@@ -57,6 +59,7 @@ export default {
         {
           text: 'Debit',
           value: 'debit',
+          width: '15%',
           groupable: false,
           type: Number,
           filters: [],
@@ -75,6 +78,7 @@ export default {
         {
           text: 'Description',
           value: 'description',
+          large: true,
           groupable: false,
           type: String,
           filters: [],
@@ -83,6 +87,8 @@ export default {
             attrs: {
               'single-line': true,
               'hide-details': true,
+              width: '100%',
+              class: 'col-description',
             },
           },
         },

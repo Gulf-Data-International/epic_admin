@@ -396,4 +396,7 @@ export default {
 .tr-no-hover:hover {
   background-color: transparent !important;
 }
+.v-small-dialog__activator__content {
+  display: initial;
+}
 </style>
