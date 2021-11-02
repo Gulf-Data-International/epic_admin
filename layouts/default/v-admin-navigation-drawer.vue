@@ -92,6 +92,10 @@ export default {
       this.pMiniVariant = !this.pMiniVariant
       return this.pMiniVariant
     },
+    toggelClipped() {
+      this.pClipped = !this.pClipped
+      return this.pClipped
+    },
   },
 }
 </script>
