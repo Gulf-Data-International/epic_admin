@@ -70,9 +70,29 @@ export default {
               'hide-details': true,
               type: 'number',
             },
-            on: {
-              blur: this.itemComponentBlur,
+            on: [
+              {
+                name: 'blur',
+                callback: this.itemComponentBlur,
+              },
+            ],
+          },
+          footer: {
+            vType: 'v-text-field',
+            attrs: {
+              'single-line': true,
+              'hide-details': true,
+              dense: true,
+              value: 2000,
+              outlined: true,
             },
+            on: [
+              {
+                name: 'blur',
+                callback: this.itemComponentBlur,
+              },
+            ],
+            value: '',
           },
         },
         {
@@ -102,9 +122,40 @@ export default {
     this.setLoading(false)
   },
   methods: {
-    itemComponentBlur: (props, event) => {
+    columnAggregate: (header, props, event) => {
+      console.log('HEADER :', header)
+      console.log('PROPS :', props)
+      console.log('EVENT :', event)
+    },
+    columnSum(name, items) {
+      let result = 0
+      items.map((o) => {
+        result += isNaN(o[name]) ? 0 : o[name]
+        return null
+      })
+      return result
+    },
+    columnCountNotNull(name, items) {
+      let result = 0
+      items.map((o) => {
+        result +=
+          o[name] === null ||
+          o[name] === undefined ||
+          o[name] === '' ||
+          o[name] === 0
+            ? 0
+            : 1
+        return null
+      })
+      return result
+    },
+    columnAverage(name, items) {
+      return this.columnSum(name, items) / items.count
+    },
+    itemComponentBlur: (header, props, event) => {
       console.log('blurItemCell :', JSON.stringify(props))
     },
+
     ...mapActions(['setLoading']),
   },
 }
