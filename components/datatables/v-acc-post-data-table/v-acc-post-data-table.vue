@@ -3,7 +3,7 @@
     <v-switch @change="(e) => setLoading(e)"> </v-switch>
     <v-base-datatable
       :loading="getLoading"
-      :items="items"
+      :items="getEntries"
       :headers="headers"
       :table-options="{ groupBy: [], itemsPerPage: 5 }"
     >
@@ -13,15 +13,20 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex'
+import aggregateArrayColumn from '../mixins/aggregateArrayColumn'
 import vBaseDatatable from '~/components/datatables/v-base-datatable/data-table.vue'
 
 export default {
   components: { vBaseDatatable },
+  mixins: [aggregateArrayColumn],
   props: {
     items: { type: Array, default: () => [] },
   },
   data() {
     return {
+      valid: false,
+      totalCredit: 0,
+      totalDebit: 0,
       headers: [
         {
           text: 'Account',
@@ -73,7 +78,7 @@ export default {
             on: [
               {
                 name: 'blur',
-                callback: this.itemComponentBlur,
+                callback: this.debitBlur,
               },
             ],
           },
@@ -82,14 +87,15 @@ export default {
             attrs: {
               'single-line': true,
               'hide-details': true,
+              disabled: true,
               dense: true,
-              value: 2000,
+              value: this.getTotalDebit,
               outlined: true,
             },
             on: [
               {
                 name: 'blur',
-                callback: this.itemComponentBlur,
+                callback: () => {},
               },
             ],
             value: '',
@@ -110,50 +116,53 @@ export default {
               width: '100%',
               class: 'col-description',
             },
+            // on: [{ name: 'blur', callback: this.appendRow }],
           },
         },
       ],
+      model: { id: null, account: '', credit: 0, debit: 0, description: '' },
+      entries: this.items,
     }
   },
   computed: {
+    getEntries() {
+      return this.entries
+    },
+    getTotalDebit() {
+      return this.totalDebit
+    },
+    getTotalCredit() {
+      return this.totalCredit
+    },
     ...mapGetters(['getLoading']),
   },
   created() {
     this.setLoading(false)
   },
   methods: {
+    // appendRow(header, props, $event) {
+    //   console.log('EVENT: => ', $event)
+    //   if (this.IsLastCell(props, this.headers, this.entries)) {
+    //     // const row = this.items.slice(-1)[0]
+
+    //     this.entries = [...this.entries, this.model]
+    //     console.log('New Row', this.model)
+    //     // document.getElementById($event.target.id).focus()
+    //     $event.target.focus()
+    //   }
+    //   return false
+    // },
+    debitBlur(header, props, event) {
+      console.log(this.columnSum(header.value, this.entries))
+      header.footer.attrs.value = this.columnSum(header.value, this.entries)
+    },
+    itemComponentBlur(header, props, event) {
+      console.log('blurItemCell :', JSON.stringify(props))
+    },
     columnAggregate: (header, props, event) => {
       console.log('HEADER :', header)
       console.log('PROPS :', props)
       console.log('EVENT :', event)
-    },
-    columnSum(name, items) {
-      let result = 0
-      items.map((o) => {
-        result += isNaN(o[name]) ? 0 : o[name]
-        return null
-      })
-      return result
-    },
-    columnCountNotNull(name, items) {
-      let result = 0
-      items.map((o) => {
-        result +=
-          o[name] === null ||
-          o[name] === undefined ||
-          o[name] === '' ||
-          o[name] === 0
-            ? 0
-            : 1
-        return null
-      })
-      return result
-    },
-    columnAverage(name, items) {
-      return this.columnSum(name, items) / items.count
-    },
-    itemComponentBlur: (header, props, event) => {
-      console.log('blurItemCell :', JSON.stringify(props))
     },
 
     ...mapActions(['setLoading']),
