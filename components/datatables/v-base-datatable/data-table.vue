@@ -251,7 +251,7 @@ export default {
         const row = this.generateNewRow(this.headers) // this.items.slice(-1)[0]
 
         this.entries = [...this.entries, row]
-        console.log('New Row', this.model)
+        console.log('New Row', row)
         // document.getElementById($event.target.id).focus()
         $event.target.focus()
       }

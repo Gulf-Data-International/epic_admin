@@ -38,5 +38,23 @@ export default {
     //   }
     //   return false
     // },
+    generateComponent(vType, attrs, on) {
+      return {
+        vType,
+        attrs,
+        on,
+      }
+    },
+    generateColumn(type, title, name, value, cellComponent, footerComponent) {
+      const column = {
+        type,
+        name: title,
+        value: name,
+        default: value,
+        component: cellComponent,
+        footer: footerComponent,
+      }
+      return column
+    },
   },
 }

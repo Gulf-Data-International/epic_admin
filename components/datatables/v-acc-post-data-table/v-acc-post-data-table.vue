@@ -1,13 +1,25 @@
 <template>
   <div>
-    <v-switch @change="(e) => setLoading(e)"> </v-switch>
-    <v-base-datatable
-      :loading="getLoading"
-      :items="getEntries"
-      :headers="headers"
-      :table-options="{ groupBy: [], itemsPerPage: 5 }"
-    >
-    </v-base-datatable>
+    <v-row>
+      <v-col>
+        <v-switch @change="(e) => setLoading(e)"> </v-switch>
+        <v-spacer></v-spacer>
+        <v-btn color="primary" :disabled="!isVaild">Save</v-btn>
+      </v-col>
+    </v-row>
+
+    <v-row>
+      <v-col>
+        <v-base-datatable
+          ref="baseTable"
+          :loading="getLoading"
+          :items="items"
+          :headers="headers"
+          :table-options="{ groupBy: [], itemsPerPage: 5 }"
+        >
+        </v-base-datatable>
+      </v-col>
+    </v-row>
   </div>
 </template>
 
@@ -44,6 +56,22 @@ export default {
               'hide-details': true,
             },
           },
+          footer: {
+            vType: 'span',
+            attrs: {
+              style: 'width:40px; height:40px; display:block;',
+              title: 'Total',
+            },
+            on: [
+              {
+                name: 'load',
+                callback: (h, p, e) => {
+                  e.target.innerText = 'Total'
+                  console.log('PRops -> ', p)
+                },
+              },
+            ],
+          },
         },
         {
           text: 'Credit',
@@ -59,6 +87,30 @@ export default {
               'hide-details': true,
               type: 'number',
             },
+            on: [
+              {
+                name: 'blur',
+                callback: this.computeSUM,
+              },
+            ],
+          },
+          footer: {
+            vType: 'v-text-field',
+            attrs: {
+              'single-line': true,
+              'hide-details': true,
+              disabled: true,
+              dense: true,
+              value: this.getTotalCredit,
+              // outlined: true,
+            },
+            on: [
+              {
+                name: 'blur',
+                callback: () => {},
+              },
+            ],
+            value: '',
           },
         },
         {
@@ -78,7 +130,7 @@ export default {
             on: [
               {
                 name: 'blur',
-                callback: this.debitBlur,
+                callback: this.computeSUM,
               },
             ],
           },
@@ -90,7 +142,7 @@ export default {
               disabled: true,
               dense: true,
               value: this.getTotalDebit,
-              outlined: true,
+              // outlined: true,
             },
             on: [
               {
@@ -120,13 +172,18 @@ export default {
           },
         },
       ],
-      model: { id: null, account: '', credit: 0, debit: 0, description: '' },
-      entries: this.items,
+      // model: { id: null, account: '', credit: 0, debit: 0, description: '' },
+      isMounted: false,
     }
   },
   computed: {
-    getEntries() {
-      return this.entries
+    isVaild() {
+      // eslint-disable-next-line eqeqeq
+      return this.totalCredit == this.totalDebit
+    },
+    getItems() {
+      if (!this.isMounted) return
+      return this.$refs.baseTable.entries
     },
     getTotalDebit() {
       return this.totalDebit
@@ -139,25 +196,22 @@ export default {
   created() {
     this.setLoading(false)
   },
+  mounted() {
+    this.isMounted = true
+    this.totalCredit = this.columnSum('credit', this.getItems)
+    this.totalDebit = this.columnSum('debit', this.getItems)
+    console.log('Total Credit:', this.totalCredit)
+    console.log('Total Debit:', this.totalDebit)
+  },
   methods: {
-    // appendRow(header, props, $event) {
-    //   console.log('EVENT: => ', $event)
-    //   if (this.IsLastCell(props, this.headers, this.entries)) {
-    //     // const row = this.items.slice(-1)[0]
-
-    //     this.entries = [...this.entries, this.model]
-    //     console.log('New Row', this.model)
-    //     // document.getElementById($event.target.id).focus()
-    //     $event.target.focus()
-    //   }
-    //   return false
-    // },
-    debitBlur(header, props, event) {
-      console.log(this.columnSum(header.value, this.entries))
-      header.footer.attrs.value = this.columnSum(header.value, this.entries)
+    computeSUM(header, props, event) {
+      // if (event.target.value > 0) props.item[header.value] = 0
+      header.footer.attrs.value = this.columnSum(header.value, this.getItems)
     },
-    itemComponentBlur(header, props, event) {
-      console.log('blurItemCell :', JSON.stringify(props))
+    creditBlur(header, props, event) {
+      if (event.target.value > 0) props.item.debit = 0
+      this.totalCredit = this.columnSum(header.value, this.items)
+      header.footer.attrs.value = this.getTotalCredit
     },
     columnAggregate: (header, props, event) => {
       console.log('HEADER :', header)

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-acc-post-data-table :loading="false" :items="items">
+    <v-acc-post-data-table :loading="false" :items="getItems">
     </v-acc-post-data-table>
   </div>
 </template>
@@ -30,6 +30,16 @@ export default {
         },
       ],
     }
+  },
+  computed: {
+    getItems: {
+      get() {
+        return this.items
+      },
+      set(val) {
+        this.items = val
+      },
+    },
   },
   methods: {
     ckeckEntryBalance(entry) {
