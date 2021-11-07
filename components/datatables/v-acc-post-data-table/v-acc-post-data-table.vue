@@ -97,7 +97,7 @@ export default {
                 name: 'load',
                 callback: (h, p, e) => {
                   e.target.innerText = 'Total'
-                  console.log('PRops -> ', p)
+                  // console.log('PRops -> ', p)
                 },
               },
             ],
@@ -137,12 +137,7 @@ export default {
             on: [
               {
                 name: 'load',
-                callback(h, p, e) {
-                  console.log(
-                    'FROM-CREDIT:',
-                    this.columnSum(h.value, this.getItems)
-                  )
-                },
+                callback(h, p, e) {},
               },
             ],
             value: '',

@@ -3,7 +3,7 @@ export default {
     columnSum(name, items) {
       let result = 0
       items.map((o) => {
-        console.log('Column', name, '- Value:', o[name])
+        // console.log('Column', name, '- Value:', o[name])
         result += isNaN(o[name]) ? 0 : parseFloat(o[name])
         return null
       })
