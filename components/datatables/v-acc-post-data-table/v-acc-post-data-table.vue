@@ -24,9 +24,31 @@
 </template>
 
 <script>
+import {
+  required,
+  digits, // ,email,min,max,regex,
+} from 'vee-validate/dist/rules'
+import {
+  extend,
+  // ValidationObserver,
+  // ValidationProvider,
+  setInteractionMode,
+} from 'vee-validate'
 import { mapGetters, mapActions } from 'vuex'
 import aggregateArrayColumn from '../mixins/aggregateArrayColumn'
 import vBaseDatatable from '~/components/datatables/v-base-datatable/data-table.vue'
+
+setInteractionMode('eager')
+
+extend('digits', {
+  ...digits,
+  message: '{_field_} needs to be {length} digits. ({_value_})',
+})
+
+extend('required', {
+  ...required,
+  message: '{_field_} can not be empty',
+})
 
 export default {
   components: { vBaseDatatable },
@@ -39,6 +61,7 @@ export default {
       valid: false,
       totalCredit: 0,
       totalDebit: 0,
+      isMounted: false,
       headers: [
         {
           text: 'Account',
@@ -54,7 +77,16 @@ export default {
             attrs: {
               'single-line': true,
               'hide-details': true,
+              rules: ['required'],
             },
+            on: [
+              {
+                name: 'blur',
+                callback: (h, p, e) => {
+                  // e.target.focus()
+                },
+              },
+            ],
           },
           footer: {
             vType: 'span',
@@ -90,7 +122,7 @@ export default {
             on: [
               {
                 name: 'blur',
-                callback: this.computeSUM,
+                callback: this.creditBlur,
               },
             ],
           },
@@ -106,8 +138,13 @@ export default {
             },
             on: [
               {
-                name: 'blur',
-                callback: () => {},
+                name: 'load',
+                callback(h, p, e) {
+                  console.log(
+                    'FROM-CREDIT:',
+                    this.columnSum(h.value, this.getItems)
+                  )
+                },
               },
             ],
             value: '',
@@ -130,7 +167,7 @@ export default {
             on: [
               {
                 name: 'blur',
-                callback: this.computeSUM,
+                callback: this.debitBlur,
               },
             ],
           },
@@ -146,7 +183,7 @@ export default {
             },
             on: [
               {
-                name: 'blur',
+                name: 'load',
                 callback: () => {},
               },
             ],
@@ -173,7 +210,6 @@ export default {
         },
       ],
       // model: { id: null, account: '', credit: 0, debit: 0, description: '' },
-      isMounted: false,
     }
   },
   computed: {
@@ -193,30 +229,25 @@ export default {
     },
     ...mapGetters(['getLoading']),
   },
-  created() {
-    this.setLoading(false)
-  },
   mounted() {
+    this.setLoading(false)
     this.isMounted = true
-    this.totalCredit = this.columnSum('credit', this.getItems)
-    this.totalDebit = this.columnSum('debit', this.getItems)
-    console.log('Total Credit:', this.totalCredit)
-    console.log('Total Debit:', this.totalDebit)
+    this.computeSUM()
   },
   methods: {
-    computeSUM(header, props, event) {
-      // if (event.target.value > 0) props.item[header.value] = 0
-      header.footer.attrs.value = this.columnSum(header.value, this.getItems)
+    computeSUM() {
+      this.totalCredit = this.columnSum('credit', this.getItems)
+      this.totalDebit = this.columnSum('debit', this.getItems)
+      this.headers[1].footer.attrs.value = this.getTotalCredit
+      this.headers[2].footer.attrs.value = this.getTotalDebit
     },
     creditBlur(header, props, event) {
       if (event.target.value > 0) props.item.debit = 0
-      this.totalCredit = this.columnSum(header.value, this.items)
-      header.footer.attrs.value = this.getTotalCredit
+      this.computeSUM()
     },
-    columnAggregate: (header, props, event) => {
-      console.log('HEADER :', header)
-      console.log('PROPS :', props)
-      console.log('EVENT :', event)
+    debitBlur(header, props, event) {
+      if (event.target.value > 0) props.item.credit = 0
+      this.computeSUM()
     },
 
     ...mapActions(['setLoading']),
