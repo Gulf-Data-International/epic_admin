@@ -82,9 +82,7 @@ export default {
             on: [
               {
                 name: 'blur',
-                callback: (h, p, e) => {
-                  // e.target.focus()
-                },
+                callback: this.accountBlur,
               },
             ],
           },
@@ -241,6 +239,10 @@ export default {
       this.headers[1].footer.attrs.value = this.getTotalCredit
       this.headers[2].footer.attrs.value = this.getTotalDebit
     },
+
+    accountBlur(header, props, event) {
+      if (!this.validateAccount(header, props, event)) event.target.focus()
+    },
     creditBlur(header, props, event) {
       if (event.target.value > 0) props.item.debit = 0
       this.computeSUM()
@@ -248,6 +250,13 @@ export default {
     debitBlur(header, props, event) {
       if (event.target.value > 0) props.item.credit = 0
       this.computeSUM()
+    },
+
+    validateAccount(header, props, event) {
+      return true
+    },
+    validateCredit(header, props, event) {
+      return true
     },
 
     ...mapActions(['setLoading']),
